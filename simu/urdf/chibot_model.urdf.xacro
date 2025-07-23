@@ -1,0 +1,867 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="chibot" xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- 用于gazebo仿真，定义传感器和执行器 -->
+  <xacro:include filename="$(find chibot_simu)/urdf/chibot.gazebo.xacro"/>
+  <!-- 定义了一些在rviz显示的颜色宏 -->
+  <!-- <xacro:include filename="$(find chibot_simu)/urdf/common_properties.xacro"/> -->
+  <!-- 底盘属性 -->
+  <!-- base_footprint 半径  -->
+  <!-- <xacro:property name="base_footprint_radius" value="0.001" />  -->
+
+  <!-- base_footprint -->
+  <link name="base_footprint">
+    <!-- <visual>
+      <geometry>
+        <sphere radius="${base_footprint_radius}" />
+      </geometry>
+    </visual> -->
+  </link>
+
+  <!-- Body -->
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="0.0044124 -0.00027975 0.1241"
+        rpy="0 0 0" />
+      <mass
+        value="4.6045" />
+      <inertia
+        ixx="0.139"
+        ixy="0.0011386"
+        ixz="0.0064912"
+        iyy="0.16792"
+        iyz="9.8084E-05"
+        izz="0.27613" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.18627 0.18627 0.18627 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="base_link2base_footprint" type="fixed">
+     <parent link="base_footprint"/>
+     <child link="base_link"/>
+     <!-- <origin xyz="0 0 0" /> -->
+  </joint>
+
+  <!-- Wheel -->
+  <link
+    name="left_wheel_link">
+    <inertial>
+      <origin
+        xyz="1.2292E-07 0.00016165 1.8491E-06"
+        rpy="0 0 0" />
+      <mass
+        value="1.3933" />
+      <inertia
+        ixx="0.0033662"
+        ixy="-2.9042E-10"
+        ixz="4.652E-10"
+        iyy="0.0061746"
+        iyz="-5.8108E-08"
+        izz="0.0033662" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/left_wheel_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.25098 0.25098 0.25098 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/left_wheel_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="left_wheel_joint"
+    type="continuous">
+    <origin
+      xyz="0 0.197750089477289 0.0657474186290643"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="left_wheel_link" />
+    <axis
+      xyz="0 1 0" />
+    <!-- <safety_controller
+      k_velocity="0" /> -->
+  </joint>
+
+  <link
+    name="right_wheel_link">
+    <inertial>
+      <origin
+        xyz="7.93745574977071E-08 -0.000161637742527587 1.87787913173698E-06"
+        rpy="0 0 0" />
+      <mass
+        value="1.39328218611758" />
+      <inertia
+        ixx="0.00336620767487001"
+        ixy="-2.90582469203531E-10"
+        ixz="-4.65203502548127E-10"
+        iyy="0.00617464497092101"
+        iyz="5.81072376518096E-08"
+        izz="0.00336617210974771" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/right_wheel_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.250980392156863 0.250980392156863 0.250980392156863 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/right_wheel_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="right_wheel_joint"
+    type="continuous">
+    <origin
+      xyz="0 -0.198170089477289 0.0657474186290642"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="right_wheel_link" />
+    <axis
+      xyz="0 1 0" />
+    <!-- <safety_controller
+      k_velocity="0" /> -->
+  </joint>
+  <link
+    name="lf_caster_link">
+    <inertial>
+      <origin
+        xyz="0.0065258 0.00029042 -0.018571"
+        rpy="0 0 0" />
+      <mass
+        value="0.30041" />
+      <inertia
+        ixx="0.00020331"
+        ixy="-1.7276E-06"
+        ixz="3.8386E-05"
+        iyy="0.00018743"
+        iyz="2.5407E-06"
+        izz="0.00019452" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/lf_caster_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.25098 0.25098 0.25098 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/lf_caster_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="lf_caster_joint"
+    type="continuous">
+    <origin
+      xyz="0.273 0.16775000000001 0.04495"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="lf_caster_link" />
+    <axis
+      xyz="0 0 1" />
+    <!-- <safety_controller
+      k_velocity="0" /> -->
+  </joint>
+  <link
+    name="lf_caster_link_">
+    <inertial>
+      <origin
+        xyz="-3.0896E-07 -4.7895E-07 -1.2751E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.09234" />
+      <inertia
+        ixx="2.7639E-05"
+        ixy="2.5872E-11"
+        ixz="5.199E-13"
+        iyy="3.8572E-05"
+        iyz="1.5634E-10"
+        izz="2.766E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/lf_caster_link_.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.25098 0.25098 0.25098 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/lf_caster_link_.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="lf_caster_joint_"
+    type="continuous">
+    <origin
+      xyz="0.026500000000015 0 -0.047700000000003"
+      rpy="0 0 0" />
+    <parent
+      link="lf_caster_link" />
+    <child
+      link="lf_caster_link_" />
+    <axis
+      xyz="0 -1 0" />
+    <!-- <safety_controller
+      k_velocity="0" /> -->
+  </joint>
+  <link
+    name="lb_caster_link">
+    <inertial>
+      <origin
+        xyz="-0.0065258 -0.00029042 -0.018571"
+        rpy="0 0 0" />
+      <mass
+        value="0.30041" />
+      <inertia
+        ixx="0.00020331"
+        ixy="-1.7276E-06"
+        ixz="-3.8386E-05"
+        iyy="0.00018743"
+        iyz="-2.5407E-06"
+        izz="0.00019452" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/lb_caster_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.25098 0.25098 0.25098 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/lb_caster_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="lb_caster_joint"
+    type="continuous">
+    <origin
+      xyz="-0.273 0.16775000000001 0.04495"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="lb_caster_link" />
+    <axis
+      xyz="0 0 1" />
+    <!-- <safety_controller
+      k_velocity="0" /> -->
+  </joint>
+  <link
+    name="lb_caster_link_">
+    <inertial>
+      <origin
+        xyz="3.0896E-07 4.7895E-07 -1.2751E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.09234" />
+      <inertia
+        ixx="2.7639E-05"
+        ixy="2.5872E-11"
+        ixz="-5.199E-13"
+        iyy="3.8572E-05"
+        iyz="-1.5634E-10"
+        izz="2.766E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/lb_caster_link_.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.25098 0.25098 0.25098 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/lb_caster_link_.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="lb_caster_joint_"
+    type="continuous">
+    <origin
+      xyz="-0.0265000000000149 0 -0.047700000000003"
+      rpy="0 0 0" />
+    <parent
+      link="lb_caster_link" />
+    <child
+      link="lb_caster_link_" />
+    <axis
+      xyz="0 1 0" />
+    <!-- <safety_controller
+      k_velocity="0" /> -->
+  </joint>
+  <link
+    name="rb_caster_link">
+    <inertial>
+      <origin
+        xyz="-0.0065258 -0.00029042 -0.018571"
+        rpy="0 0 0" />
+      <mass
+        value="0.30041" />
+      <inertia
+        ixx="0.00020331"
+        ixy="-1.7276E-06"
+        ixz="-3.8386E-05"
+        iyy="0.00018743"
+        iyz="-2.5407E-06"
+        izz="0.00019452" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/rb_caster_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.25098 0.25098 0.25098 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/rb_caster_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="rb_caster_joint"
+    type="continuous">
+    <origin
+      xyz="-0.273 -0.16774999999999 0.04495"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="rb_caster_link" />
+    <axis
+      xyz="0 0 1" />
+    <!-- <safety_controller
+      k_velocity="0" /> -->
+  </joint>
+  <link
+    name="rb_caster_link_">
+    <inertial>
+      <origin
+        xyz="3.0896E-07 4.7895E-07 -1.2751E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.09234" />
+      <inertia
+        ixx="2.7639E-05"
+        ixy="2.5872E-11"
+        ixz="-5.199E-13"
+        iyy="3.8572E-05"
+        iyz="-1.5634E-10"
+        izz="2.766E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/rb_caster_link_.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.25098 0.25098 0.25098 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/rb_caster_link_.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="rb_caster_joint_"
+    type="continuous">
+    <origin
+      xyz="-0.0265000000000149 0 -0.047700000000003"
+      rpy="0 0 0" />
+    <parent
+      link="rb_caster_link" />
+    <child
+      link="rb_caster_link_" />
+    <axis
+      xyz="0 1 0" />
+    <!-- <safety_controller
+      k_velocity="0" /> -->
+  </joint>
+  <link
+    name="rf_caster_link">
+    <inertial>
+      <origin
+        xyz="0.0065258 0.00029042 -0.018571"
+        rpy="0 0 0" />
+      <mass
+        value="0.30041" />
+      <inertia
+        ixx="0.00020331"
+        ixy="-1.7276E-06"
+        ixz="3.8386E-05"
+        iyy="0.00018743"
+        iyz="2.5407E-06"
+        izz="0.00019452" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/rf_caster_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.25098 0.25098 0.25098 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/rf_caster_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="rf_caster_joint"
+    type="continuous">
+    <origin
+      xyz="0.273 -0.16774999999999 0.04495"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="rf_caster_link" />
+    <axis
+      xyz="0 0 1" />
+    <!-- <safety_controller
+      k_velocity="0" /> -->
+  </joint>
+  <link
+    name="rf_caster_link_">
+    <inertial>
+      <origin
+        xyz="-3.0896E-07 -4.7895E-07 -1.2751E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.09234" />
+      <inertia
+        ixx="2.7639E-05"
+        ixy="2.5872E-11"
+        ixz="5.199E-13"
+        iyy="3.8572E-05"
+        iyz="1.5634E-10"
+        izz="2.766E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/rf_caster_link_.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.25098 0.25098 0.25098 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/rf_caster_link_.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="rf_caster_joint_"
+    type="continuous">
+    <origin
+      xyz="0.026500000000015 0 -0.047700000000003"
+      rpy="0 0 0" />
+    <parent
+      link="rf_caster_link" />
+    <child
+      link="rf_caster_link_" />
+    <axis
+      xyz="0 -1 0" />
+    <!-- <safety_controller
+      k_velocity="0" /> -->
+  </joint>
+
+  <!-- camera -->
+  <link
+    name="camera_link">
+    <inertial>
+      <origin
+        xyz="-0.00072931 -7.4658E-05 5.3381E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.012349" />
+      <inertia
+        ixx="1.1825E-05"
+        ixy="2.2026E-09"
+        ixz="-1.4419E-09"
+        iyy="1.0732E-06"
+        iyz="4.0858E-09"
+        izz="1.1073E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/camera_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.25098 0.25098 0.25098 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/camera_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="camera_joint"
+    type="fixed">
+    <origin
+      xyz="0.34295 0 0.19530000000001"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="camera_link" />
+    <axis
+      xyz="0 0 0" />
+    <!-- <safety_controller
+      k_velocity="0" /> -->
+  </joint>
+
+  <!-- Camera -->
+  <!-- <link name="camera_front_base"/> -->
+  <!-- <joint name="camera_joint" type="fixed">
+    <axis xyz="0 0 0" />
+    <origin xyz="0.305 0 0.495" rpy="0 0 0"/> -->
+    <!-- <parent link="base_link"/>
+    <child link="camera_front_base"/>
+  </joint> -->
+  <link name="camera_front_link" />
+  <joint name="camera_front_joint" type="fixed">
+    <axis xyz="0 0 0" />
+    <origin xyz="0 0 0" rpy="-1.57 0 -1.57"/>
+    <parent link="camera_link"/>
+    <child link="camera_front_link"/>
+  </joint>
+
+  
+  <!-- lindar -->
+  <link
+    name="front_lidar_link">
+    <inertial>
+      <origin
+        xyz="-0.0017871 -0.0017877 -0.00659"
+        rpy="0 0 0" />
+      <mass
+        value="0.037433" />
+      <inertia
+        ixx="3.0835E-05"
+        ixy="-2.7811E-06"
+        ixz="-7.5749E-07"
+        iyy="3.0833E-05"
+        iyz="-7.5707E-07"
+        izz="4.5089E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/front_lidar_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.25098 0.25098 0.25098 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/front_lidar_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="front_lidar_joint"
+    type="fixed">
+    <origin
+      xyz="0.300013952515174 0.235013952502531 0.134697082760281"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="front_lidar_link" />
+    <axis
+      xyz="0 0 0" />
+    <!-- <safety_controller
+      k_velocity="0" /> -->
+  </joint>
+  <link
+    name="back_lidar_link">
+    <inertial>
+      <origin
+        xyz="0.0017874 0.0017874 -0.0065902"
+        rpy="0 0 0" />
+      <mass
+        value="0.037433" />
+      <inertia
+        ixx="3.0833E-05"
+        ixy="-2.7807E-06"
+        ixz="7.5712E-07"
+        iyy="3.0834E-05"
+        iyz="7.5751E-07"
+        izz="4.5087E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/back_lidar_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.25098 0.25098 0.25098 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chibot_simu/meshes/back_lidar_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="back_lidar_joint"
+    type="fixed">
+    <origin
+      xyz="-0.300013952515174 -0.235013952502531 0.134697082760281"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="back_lidar_link" />
+    <axis
+      xyz="0 0 0" />
+    <!-- <safety_controller
+      k_velocity="0" /> -->
+  </joint>
+
+  <!-- IMU -->
+  <link name="imu_link"/>
+  <joint
+    name="joint_imu"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="imu_link" />
+    <axis
+      xyz="0 0 0" />
+    <safety_controller
+      k_velocity="0" />
+  </joint>
+
+  <!-- 不能直接发布tf,，必须要有真正的urdf关系 -->
+  <!-- Ultrasonic -->
+  <link name="ultra_left_front_link">
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <box size="0.001 0.001 0.001" />
+      </geometry>
+      <material name="" />
+    </visual>
+  </link>
+  <joint name="ultra_left_front_joint" type="fixed">
+    <axis xyz="0 0 0" />
+    <origin xyz="0.3444 0.2678 0.21" rpy="0 0 0.7854"/>
+    <parent link="base_link"/>
+    <child link="ultra_left_front_link"/>
+  </joint>
+
+  <link name="ultra_right_front_link">
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <box size="0.001 0.001 0.001" />
+      </geometry>
+      <material name="" />
+    </visual>
+  </link>
+  <joint name="ultra_right_front_joint" type="fixed">
+    <axis xyz="0 0 0" />
+    <origin xyz="0.3444 -0.2678 0.21" rpy="0 0 -0.7854"/>
+    <parent link="base_link"/>
+    <child link="ultra_right_front_link"/>
+  </joint>
+
+</robot>

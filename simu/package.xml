@@ -1,0 +1,31 @@
+<package format="2">
+  <name>chibot_simu</name>
+  <version>1.0.0</version>
+  <description>
+    <p>URDF Description package for chibot</p>
+    <p>This package contains configuration data, 3D models and launch files
+for chibot_simu robot</p>
+  </description>
+  <author>TODO</author>
+  <maintainer email="TODO@email.com" />
+  <license>BSD</license>
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>roslaunch</depend>
+  <depend>robot_state_publisher</depend>
+  <depend>rviz</depend>
+  <depend>joint_state_publisher_gui</depend>
+  <depend>joint_state_publisher</depend>
+  <depend>gazebo</depend>
+  <depend>message_generation</depend>
+  <depend>message_runtime</depend>
+  <depend>roscpp</depend>
+  <depend>rospy</depend>
+  <depend>std_msgs</depend>
+  <depend>tf2</depend>
+  <depend>tf2_ros</depend>
+  <depend>tf2_geometry_msgs</depend>
+
+  <export>
+    <architecture_independent />
+  </export>
+</package>
