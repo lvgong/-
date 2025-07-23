@@ -1,0 +1,118 @@
+MpcLocalPlannerROS:
+
+  odom_topic: odom #机器人的里程计话题名称
+    
+   ## Robot settings
+  robot:
+    type: "unicycle" #独轮车模型
+    unicycle:
+      max_vel_x: 0.4 #前进的最大线速度
+      max_vel_x_backwards: 0.2 #后退的最大线速度
+      max_vel_theta: 0.3
+      acc_lim_x: 0.2 # deactive bounds with zero 前进的线性加速度限制
+      dec_lim_x: 0.2 # deactive bounds with zero 前进的线性减速度限制
+      acc_lim_theta: 0.2 # deactivate bounds with zero
+
+  ## Footprint model for collision avoidance 用于避免碰撞的足迹模型
+  footprint_model:
+    type: "point" #足迹模型的类型，可以是point、circular、two_circles、line或polygon
+# radius：当足迹模型类型为circular时的半径。
+# line_start：当足迹模型类型为line时的起点坐标。
+# line_end：当足迹模型类型为line时的终点坐标。
+# front_offset：当足迹模型类型为two_circles时前圆心偏移量。
+# front_radius：当足迹模型类型为two_circles时前圆半径。
+# rear_offset：当足迹模型类型为two_circles时后圆心偏移量。
+# rear_radius：当足迹模型类型为two_circles时后圆半径。
+# vertices：当足迹模型类型为polygon时的顶点坐标。
+    is_footprint_dynamic: False #足迹是否是动态的
+
+  ## Collision avoidance 碰撞避免相关设置
+  collision_avoidance:
+  # 障碍物的最小安全距离。注意，此参数必须与足迹模型相匹配
+    min_obstacle_dist: 0.2 # Note, this parameter must be chosen w.r.t. the footprint_model
+    enable_dynamic_obstacles: False #是否启用动态障碍物
+    force_inclusion_dist: 0.5 #强制包含距离
+    cutoff_dist: 2.5  #截断距离
+    include_costmap_obstacles: True #是否包括代价地图中的障碍物
+    costmap_obstacles_behind_robot_dist: 1.5 #机器人后方的代价地图障碍物距离
+
+  ## Planning grid  规划网格相关设置
+  grid:
+    type: "fd_grid" #规划网格的类型
+    grid_size_ref: 20 #参考网格大小
+    dt_ref: 0.3 #参考时间间隔
+    xf_fixed: [True, True, True] #是否固定终点状态
+    warm_start: True #是否使用热启动
+    collocation_method: "forward_differences" #插值方法，这里是forward_differences
+    cost_integration_method: "left_sum" #成本积分方法，这里是left_sum
+    variable_grid: #可变网格设置
+      enable: True  #是否启用可变网格
+      min_dt: 0.0; #最小时间间隔
+      max_dt: 10.0; #最大时间间隔
+      grid_adaptation: #网格自适应设置
+        enable: True #是否启用网格自适应
+        dt_hyst_ratio: 0.1 #时间间隔滞后比率
+        min_grid_size: 2 #最小网格大小
+        max_grid_size: 50 #最大网格大小
+
+  ## Planning options 规划选项
+  planning:
+    objective: #目标函数设置
+    # 目标函数类型，这里是minimum_time，表示最小化时间
+      type: "minimum_time" # minimum_time requires grid/variable_grid/enable=True and grid/xf_fixed set properly
+      quadratic_form:
+        state_weights: [2.0, 2.0, 2.0]
+        control_weights: [1.0, 1.0]
+        integral_form: False
+      minimum_time_via_points:
+        position_weight: 10.5
+        orientation_weight: 0.0
+        via_points_ordered: False
+    terminal_cost: #终端成本设置
+      type: "none" # can be "none" 终端成本类型，这里是none，表示没有终端成本
+      quadratic:
+        final_state_weights: [2.0, 2.0, 2.0]
+    terminal_constraint: #终端约束设置
+      type: "none" # can be "none" 终端约束类型，这里是none，表示没有终端约束
+      l2_ball:
+        weight_matrix: [1.0, 1.0, 1.0]
+        radius: 5
+
+  ## Controller options 控制器选项
+  controller:
+    outer_ocp_iterations: 5 #外层最优控制迭代次数
+    xy_goal_tolerance: 0.2 #xy坐标目标容差
+    yaw_goal_tolerance: 0.1 #偏航角目标容差
+    global_plan_overwrite_orientation: true #全局路径是否覆盖机器人当前姿态
+    global_plan_prune_distance: 1.0 #全局路径修剪距离
+    allow_init_with_backward_motion: True #是否允许使用向后运动初始化
+    max_global_plan_lookahead_dist: 1.5  #全局路径最大预瞄距离
+    global_plan_viapoint_sep: 5.5
+    force_reinit_new_goal_dist: 1.0 #强制重新初始化新目标的角度
+    force_reinit_new_goal_angular: 1.57 #强制重新初始化新目标的角度
+    force_reinit_num_steps: 0 
+    prefer_x_feedback: False #是否优先使用x反馈
+    publish_ocp_results: False #是否发布OCP结果
+    
+  ## Solver settings #求解器设置
+  solver:
+    type: "ipopt" #求解器类型，这里是ipopt
+    ipopt: #Ipopt求解器设置
+      iterations: 100 #迭代次数
+      max_cpu_time: -1.0 #最大CPU时间
+      ipopt_numeric_options: #Ipopt的数值选项
+        tol: 1e-4 #容差
+      ipopt_string_options: #Ipopt的字符串选项
+        linear_solver: "mumps"  #线性求解器，这里是mumps
+        hessian_approximation: "exact" # exact or limited-memory Hessian矩阵近似方法
+    lsq_lm: #Levenberg-Marquardt方法设置
+      iterations: 10 #迭代次数
+      weight_init_eq: 2 #等式初始权重
+      weight_init_ineq: 2 #不等式初始权重
+      weight_init_bounds: 2 #边界初始权重
+      weight_adapt_factor_eq: 1.5 #等式权重自适应因子
+      weight_adapt_factor_ineq: 1.5 #不等式权重自适应因子
+      weight_adapt_factor_bounds: 1.5 #边界权重自适应因子
+      weight_adapt_max_eq: 500 #等式权重自适应最大值
+      weight_adapt_max_ineq: 500 #不等式权重自适应最大值
+      weight_adapt_max_bounds: 500 #边界权重自适应最大值
