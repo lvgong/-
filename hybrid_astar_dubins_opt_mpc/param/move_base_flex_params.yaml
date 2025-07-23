@@ -1,0 +1,33 @@
+planners:
+  - name: GlobalPlanner
+    type: global_planner/GlobalPlanner
+
+# controllers:
+#   - name: TebLocalPlannerROS
+#     type: teb_local_planner/TebLocalPlannerROS
+
+controllers:
+  - name: MpcLocalPlannerROS
+    type: mpc_local_planner/MpcLocalPlannerROS
+
+planner_frequency: 0.5
+planner_patience: 5.0
+planner_max_retries: 1
+
+# controller_frequency: 5.0
+# controller_patience: 8.0
+# controller_max_retries: 3
+
+controller_frequency: 5.0
+controller_patience: 15.0
+controller_max_retries: 3
+
+clearing_rotation_allowed: false #机器人在遇到障碍物时将不会执行旋转动作，而是停止并等待障碍物被清除后再继续前进
+recovery_enabled: true
+recovery_patience: 10.0
+
+oscillation_timeout: 8.0
+oscillation_distance: 0.15
+
+force_stop_at_goal: true
+controller_lock_costmap: false

@@ -1,0 +1,73 @@
+<launch>
+<!-- 这个launch用在记录示教路径时 -->
+
+<!-- 需要附加命令：2> >(grep -v TF_REPEATED_DATA buffer_core) 来屏蔽TF_REPEATED_DATA——AMCL的bug-->
+
+<!-- rosrun rqt_service_caller rqt_service_caller 启用rqt服务调用，我们的chibot_state_machine中有服务相关的进程 -->
+    
+    <!--  ************** Global Parameters ***************  -->
+    <!-- <param name="/use_sim_time" value="true"/> -->
+    <!-- <arg name="cmd_vel_topic" default="/cmd_vel" /> -->
+    <!-- <arg name="odom_topic" default="odom" /> -->
+    <arg name="localization_rviz" default="false"/>
+    <arg name="pnc_rviz" default="true"/>
+    <!-- <arg name="plot" default="false" /> -->
+    <!-- <arg name="plot_states" default="false" /> -->
+
+    <!--  ************** Gazebo 另开 ***************  -->
+
+    <!-- amcl+加载地图+雷达数据融合 -->
+    <include file="$(find chibot_slam)/launch/localization.launch">
+        <arg name="rviz" value="$(arg localization_rviz)" />
+    </include>
+
+    <!--  ************** Navigation ***************  -->
+    <!-- move_base_flex(mbf)，拥有更多可扩展的导航跨架 -->
+    <!-- <node pkg="mbf_costmap_nav" type="mbf_costmap_nav" respawn="false" name="move_base_flex" output="screen"> -->
+        <!-- <rosparam file="$(find hybrid_astar_dubins_opt_mpc)/param/costmap_params.yaml" command="load" /> -->
+        <!-- <rosparam file="$(find hybrid_astar_dubins_opt_mpc)/param/move_base_flex_params.yaml" command="load" /> -->
+        <!-- <rosparam file="$(find chibot_pnc)/param/mbf_sbpl.yaml" command="load" /> -->
+        <!-- <rosparam file="$(find chibot_pnc)/param/sbpl_global_params.yaml" command="load" /> -->
+        <!-- <rosparam file="$(find hybrid_astar_dubins_opt_mpc)/param/recovery_behavior_params.yaml" command="load" /> -->
+        <!-- <rosparam file="$(find hybrid_astar_dubins_opt_mpc)/param/teb_local_planner_params_mbf.yaml" command="load" /> -->
+        <!-- <rosparam file="$(find hybrid_astar_dubins_opt_mpc)/param/costmap_converter_params.yaml" command="load" /> -->
+  		<!-- <rosparam file="$(find hybrid_astar_dubins_opt_mpc)/param/mpc_local_planner_params_mintime_via_points.yaml" command="load" />      -->
+        <!-- <param name="MpcLocalPlannerROS/controller/publish_ocp_results" value="true" if="$(arg plot)" />    -->
+        
+        <!-- <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/> -->
+        <!-- <remap from="odom" to="$(arg odom_topic)"/> -->
+
+    <!-- </node> -->
+
+    <!-- action goal bridge -->
+    <!-- 将rivz-2D NAV Goal标定的路点转化为发送给mbf的action_goal，而不是move_base的，用于debug -->
+    <!-- <node pkg="hybrid_astar_dubins_opt_mpc" type="chibot_mbf_bridge" respawn="false" name="chibot_mbf_bridge" /> -->
+    
+    <!-- 主功能 -->
+    <param name="/root_path" value="$(find hybrid_astar_dubins_opt_mpc)" type="string"/>
+
+    <node pkg="hybrid_astar_dubins_opt_mpc" type="hybrid_astar_Bspline_LMPC" name="hybrid_astar_Bspline_LMPC" output="screen">
+        <param name="MPC/v_max" value="0.5" type="double"/>
+        <param name="MPC/w_max" value="0.5" type="double"/>
+        <param name="MPC/omega0" value="3.0" type="double"/>
+        <param name="MPC/omega1" value="0.5" type="double"/>
+<!-- 
+    1. `omega0` 越大，MPC 求解结果越倾向于减小误差，但有可能超过机器人的运动学极限
+    2. `omega1` 越大，MPC 求解结果越倾向于使得机器人的运动更平滑，但与参考轨迹之间的误差会增大
+    在 CMU 提供的仿真环境中，本人建议调大 `omega0`，因为该仿真环境中小车的运动不受限制
+    但在存在物理引擎的仿真环境中，建议适当调大 `omega1`，否则很容易出现角速度和线速度过大的现象，导致机器人运动不平滑 -->
+    </node>
+
+    <!-- rviz -->
+    <group if="$(arg pnc_rviz)">
+        <node pkg="rviz" type="rviz" name="rviz" args="-d $(find hybrid_astar_dubins_opt_mpc)/rviz/inspection_map_mpc.rviz" />
+    </group>
+
+    <!-- **************** Plot ocp results ************** -->
+    <!-- <node name="ocp_result_plotter" pkg="mpc_local_planner" type="plot_optimal_control_results.py" output="screen" if="$(arg plot)">
+        <param name="ocp_result_topic" value="/move_base/MpcLocalPlannerROS/ocp_result"/>
+        <param name="plot_rate" value="5"/>
+        <param name="plot_states" value="$(arg plot_states)"/>
+    </node> -->
+
+</launch>

@@ -1,0 +1,128 @@
+MpcLocalPlannerROS:
+
+  odom_topic: odom #机器人的里程计话题名称。
+    
+   ## Robot settings 机器人相关设置。
+  robot:
+    type: "unicycle" #机器人类型
+    unicycle:
+      max_vel_x: 0.3 #前进的最大线速度
+      max_vel_x_backwards: 0.05 #后退的最大线速度。
+      max_vel_theta: 0.3 ##最大角速度
+      acc_lim_x: 0.5 # deactive bounds with zero 前进的线性加速度限制。
+      dec_lim_x: 0.5 # deactive bounds with zero 前进的线性减速度限制。
+      acc_lim_theta: 0.5 # deactivate bounds with zero 角速度加速限制
+
+  ## Footprint model for collision avoidance 用于避免碰撞的足迹模型。
+  footprint_model: 
+    type: "polygon" #足迹模型的类型，可以是point、circular、two_circles、line或polygon。
+    radius: 0.36 # for type "circular" 当足迹模型类型为circular时的半径。
+    line_start: [-0.3, 0.0] # for type "line" 该参数指定了线段的起点坐标，以机器人为参考系 当足迹模型类型为line时的起点坐标。
+    line_end: [0.3, 0.0] # for type "line" 该参数指定了线段的终点坐标，以机器人为参考系 当足迹模型类型为line时的终点坐标。
+    front_offset: 0.2 # for type "two_circles" 当足迹模型类型为two_circles时前圆心偏移量。
+    front_radius: 0.2 # for type "two_circles" 当足迹模型类型为two_circles时前圆半径。
+    rear_offset: 0.0 # for type "two_circles" 当足迹模型类型为two_circles时后圆心偏移量。
+    rear_radius: 0.2 # for type "two_circles" 当足迹模型类型为two_circles时后圆半径。
+    vertices: [[0.36, 0.29], [-0.36, 0.29], [-0.36, -0.29], [0.36, -0.29]] # for type "polygon" 当足迹模型类型为polygon时的顶点坐标。
+    is_footprint_dynamic: False #足迹是否是动态的。
+
+  ## Collision avoidance 碰撞避免相关设置。
+  collision_avoidance:
+  # 障碍物的最小安全距离。注意，此参数必须与足迹模型相匹配。
+#与障碍的最小期望距离
+# 若设置了车辆的轮廓，则不建议使用此参数。使用车辆轮廓配置footprint_model配合膨胀距离即可实现较好效果。障碍物惩罚权重很高，TEB不会违背这一最小距离约束，因此会把可以通过的缝隙视作不能通过，并终止运行。请注意，此处设置的机器人轮廓必须与局部耗费地图中的一致
+    min_obstacle_dist: 0.5 # Note, this parameter must be chosen w.r.t.(相对于) the footprint_model
+    enable_dynamic_obstacles: False #是否启用动态障碍物。
+    force_inclusion_dist: 0.5 #强制考虑障碍距离。
+    cutoff_dist: 2.5   #截断距离>不考虑障碍。
+#  必须设置为True后才能规避实时探测到的、建图时不存在的障碍物
+    include_costmap_obstacles: True #是否考虑costmap中的障碍
+    costmap_obstacles_behind_robot_dist: 1.5 #机器人后方的代价地图障碍物距离。
+    collision_check_no_poses: 5 #碰撞检查的位姿数量。
+
+  ## Planning grid  规划网格相关设置。
+  grid:
+    type: "fd_grid" #规划网格的类型，这里是fd_grid。
+    # 参考网格大小。
+    grid_size_ref: 20 # Set horizon length here (T = (grid_size_ref-1) * dt_ref); Note, also check max_global_plan_lookahead_dist
+    dt_ref: 0.3 # and here the corresponding temporal resolution   #参考时间间隔，用于计算参考轨迹上的点
+    xf_fixed: [False, False, False] # Unfix final state -> we use terminal cost below 是否固定终点状态。
+    warm_start: True #是否使用热启动。
+    collocation_method: "forward_differences" #插值方法，这里是forward_differences。
+    cost_integration_method: "left_sum" #成本积分方法，这里是left_sum。
+    variable_grid: #可变网格设置。
+      enable: False # We want a fixed grid   是否启用可变网格。
+      min_dt: 0.0; #最小时间间隔。
+      max_dt: 10.0; #最大时间间隔。
+      grid_adaptation: #网格自适应设置。
+        enable: True #是否启用网格自适应。
+        dt_hyst_ratio: 0.1 #时间间隔滞后比率。
+        min_grid_size: 2 #最小网格大小。
+        max_grid_size: 50 #最大网格大小。
+
+  ## Planning options 规划选项。
+  planning:
+    objective: #目标函数
+    # 目标类型为二次形式（quadratic_form），表示通过最小化二次型目标函数来进行规划
+      type: "quadratic_form" # minimum_time requires grid/variable_grid/enable=True and grid/xf_fixed set properly
+      quadratic_form:
+      # state_weights指定了状态变量的权重，分别为[2.0, 2.0, 0.25]，用于衡量不同状态变量对目标函数的贡献。
+        state_weights: [2.0, 2.0, 0.25] #状态权重
+      # control_weights指定了控制变量的权重，分别为[0.1, 0.05]，用于衡量不同控制变量对目标函数的贡献 
+        control_weights: [0.1, 0.05] #控制权重
+      # integral_form为False，表示目标函数不包含积分形式  
+        integral_form: False
+    terminal_cost: #终端成本
+      type: "quadratic" # can be "none"
+      quadratic:
+      # final_state_weights指定了最终状态变量的权重，分别为[10.0, 10.0, 0.5]，用于衡量最终状态变量对成本的贡献
+        final_state_weights: [10.0, 10.0, 0.5]
+    terminal_constraint: #终端约束
+      type: "none" # can be "none"
+      l2_ball: #L2球形约束，用于限制最终状态变量的范围
+        weight_matrix: [1.0, 1.0, 1.0]
+        # radius表示约束的半径，为5，即最终状态变量需要落在以原点为中心、半径为5的球形区域内
+        radius: 5
+
+  ## Controller options 控制器选项。
+  controller:
+    outer_ocp_iterations: 1 #外层最优控制迭代次数。
+# 合理设置防止小车打转
+# 至多距离目标位置的误差(单位为米)是多少?如果把值设得太小,你的机器人可能会不断地在目标位置附近作调整。注意:不要把最大误差设定得比地图的分辨率还小,否则机器人会永不停息地在目标附近徘徊但水远到不了目标位置。
+    xy_goal_tolerance: 0.15 #xy坐标目标容差。 #目标点在X和Y方向上的公差
+# 至多距离目标方向的误差(单位为弧度)是多少?把这个值设得太小的话可能会导致机器人在目标附近倒
+    yaw_goal_tolerance: 0.1 #偏航角目标容差。 #目标点在偏航角上的公差
+    global_plan_overwrite_orientation: False #全局路径是否覆盖机器人当前姿态。
+    global_plan_prune_distance: 1.2 #全局路径修剪距离。
+    allow_init_with_backward_motion: True #是否允许使用向后运动。
+    #向前规划最长距离 #太大路径不平滑，太小避障和转弯时效果不好，太小还会导致小车不敢走
+    #前向截断距离
+    max_global_plan_lookahead_dist: 1.5 # Check horizon length #全局路径最大预瞄距离。
+    force_reinit_new_goal_dist: 1.0  #强制重新初始化新目标的距离。
+    force_reinit_new_goal_angular: 1.57 #强制重新初始化新目标的角度。
+    force_reinit_num_steps: 0 
+    prefer_x_feedback: False ##是否优先使用x反馈。
+    publish_ocp_results: False #是否发布OCP结果。
+    
+  ## Solver settings 求解器设置。
+  solver:
+    type: "ipopt" #求解器类型，这里是ipopt。
+    ipopt: #Ipopt求解器设置。
+      iterations: 100 #迭代次数。
+      max_cpu_time: -1.0 #最大CPU时间。
+      ipopt_numeric_options: #Ipopt的数值选项。
+        tol: 1e-4 #容差。
+      ipopt_string_options: #Ipopt的字符串选项。
+        linear_solver: "mumps"  #线性求解器，这里是mumps。
+        hessian_approximation: "exact" # exact or limited-memory Hessian矩阵近似方法，这里是limited-memory。
+    lsq_lm: #Levenberg-Marquardt方法设置。
+      iterations: 10 #迭代次数。
+      weight_init_eq: 2 #等式初始权重。
+      weight_init_ineq: 2 #不等式初始权重。
+      weight_init_bounds: 2 #边界初始权重。
+      weight_adapt_factor_eq: 1.5 #等式权重自适应因子。
+      weight_adapt_factor_ineq: 1.5 #不等式权重自适应因子。
+      weight_adapt_factor_bounds: 1.5 #边界权重自适应因子。
+      weight_adapt_max_eq: 500 #等式权重自适应最大值。
+      weight_adapt_max_ineq: 500 #不等式权重自适应最大值。
+      weight_adapt_max_bounds: 500 #边界权重自适应最大值。

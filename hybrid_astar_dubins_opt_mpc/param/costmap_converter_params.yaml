@@ -1,0 +1,30 @@
+###########################################################################################
+## NOTE: Costmap conversion is experimental. Its purpose is to combine many point        ##
+## obstales into clusters, computed in a separate thread in order to improve the overall ##
+## efficiency of local planning. However, the implemented conversion algorithms are in a ##
+## very early stage of development. Contributions are welcome!                           ##
+###########################################################################################
+
+TebLocalPlannerROS:
+
+  ## Costmap converter plugin
+  #costmap_converter_plugin: "costmap_converter::CostmapToPolygonsDBSMCCH"
+  costmap_converter_plugin: "costmap_converter::CostmapToLinesDBSRANSAC" #costmap转换插件,它将costmap转换为线段
+  #costmap_converter_plugin: "costmap_converter::CostmapToLinesDBSMCCH"
+  #costmap_converter_plugin: "costmap_converter::CostmapToPolygonsDBSConcaveHull"
+  costmap_converter_spin_thread: True #将costmap转换插件的处理过程放在一个单独的线程中
+  costmap_converter_rate: 5 #指定costmap转换的频率为5Hz
+
+
+  ## Configure plugins (namespace move_base/costmap_to_lines or move_base/costmap_to_polygons)
+  ## costmap_converter/CostmapToLinesDBSRANSAC, costmap_converter/CostmapToLinesDBSMCCH, costmap_converter/CostmapToPolygonsDBSMCCH
+  costmap_converter/CostmapToLinesDBSRANSAC:
+    cluster_max_distance: 0.4 #指定聚类时两个点之间的最大距离，超过这个距离的点将被视为不同的聚类
+    cluster_min_pts: 2 #指定一个聚类中最少需要的点的数量
+    ransac_inlier_distance: 0.15 #指定RANSAC算法中用于拟合的内点距离阈值
+    ransac_min_inliers: 10 #指定RANSAC算法中拟合直线所需的最少内点数量
+    ransac_no_iterations: 1500 #指定RANSAC算法的迭代次数
+    ransac_remainig_outliers: 3 #指定RANSAC算法中剩余的外点数量
+    ransac_convert_outlier_pts: True #指定是否将剩余的外点转换为线段
+    ransac_filter_remaining_outlier_pts: False #指定是否过滤掉剩余的外点
+    convex_hull_min_pt_separation: 0.1 #指定凸包算法中最小点之间的距离阈值
