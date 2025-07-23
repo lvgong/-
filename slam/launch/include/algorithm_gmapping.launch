@@ -1,0 +1,48 @@
+<launch>
+
+  <arg name="scan_topic"  default="scan" />
+  <arg name="base_frame"  default="base_footprint"/><!--底盘坐标系-->
+  <arg name="odom_frame"  default="odom"/><!--里程计坐标系-->
+
+  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
+    <param name="base_frame" value="$(arg base_frame)"/>
+    <param name="odom_frame" value="$(arg odom_frame)"/>
+    <remap from="scan" to="$(arg scan_topic)"/>
+    <!-- #地图更新频率 -->
+    <param name="map_update_interval" value="4.0"/>
+    <!-- #激光探测的最大可用范围(超出此阈值，被截断) -->
+    <param name="maxUrange" value="30.0"/>
+    <!-- 激光探测的最大范围 -->
+    <param name="maxRange" value="30.0"/>
+    <param name="sigma" value="0.05"/>
+    <param name="kernelSize" value="1"/>
+    <param name="lstep" value="0.05"/>
+    <param name="astep" value="0.05"/>
+    <param name="iterations" value="5"/>
+    <param name="lsigma" value="0.075"/>
+    <param name="ogain" value="3.0"/>
+    <param name="lskip" value="0"/>
+    <param name="minimumScore" value="20"/>
+    <param name="srr" value="0.05"/>
+    <param name="srt" value="0.1"/>
+    <param name="str" value="0.05"/>
+    <param name="stt" value="0.1"/>
+    <param name="linearUpdate" value="1.0"/>
+    <param name="angularUpdate" value="0.5"/>
+    <param name="temporalUpdate" value="3.0"/>
+    <param name="resampleThreshold" value="0.5"/>
+    <param name="particles" value="30"/>
+    <!-- 地图尺寸 -->
+    <param name="xmin" value="-30.0"/>
+    <param name="ymin" value="-30.0"/>
+    <param name="xmax" value="30.0"/>
+    <param name="ymax" value="30.0"/>
+    <param name="delta" value="0.05"/>
+    <param name="llsamplerange" value="0.01"/>
+    <param name="llsamplestep" value="0.01"/>
+    <param name="lasamplerange" value="0.005"/>
+    <param name="lasamplestep" value="0.005"/>
+  </node>
+
+</launch>
+  

@@ -1,0 +1,8 @@
+# 对地图一半做了轮廓全填充，另一半保留，看看即便不全填充轮廓会不会影响到代价值的设置
+image: /home/rosnoetic/chibot_ws/src/slam/map/complex.pgm
+resolution: 0.050000
+origin: [-30.000000, -30.000000, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+

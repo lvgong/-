@@ -1,0 +1,72 @@
+<launch>
+
+    <!-- 不可以使用PointCloud，只能使用LaserScan -->
+    <arg name="scan_topic" default="/scan"/>
+    <arg name="map_topic"  default="/map"/>
+
+    <node pkg="amcl" type="amcl" name="amcl" output="screen">
+      <!-- Publish scans from best pose at a max of 10 Hz -->
+      <!-- 置为true时，AMCL将会订阅map话题，而不是调用服务返回地图。也就是说，当设置为true时，有另外一个节点实时的发布map话题，也就是机器人在实时的进行地图构建，并供给amcl话题使用；当设置为false时，通过map server，也就是调用已经构建完成的地图 -->
+      <param name="use_map_topic" value="false"/>
+      <!-- 当设置为true时，AMCL将仅仅使用订阅的第一个地图，而不是每次接收到新的时更新为一个新的地图。 -->
+      <param name="first_map_only" value="true"/> 
+      <remap from="/map" to="/$(arg map_topic)"/>
+      <param name="odom_model_type" value="diff"/><!-- 里程计模式为差分 -->
+      <param name="odom_alpha5" value="0.1"/>
+      <param name="transform_tolerance" value="0.2" />
+      <param name="gui_publish_rate" value="10.0"/>
+      <param name="laser_max_beams" value="30"/>
+      <param name="min_particles" value="100"/>
+      <param name="max_particles" value="1000"/>
+      <param name="kld_err" value="0.05"/>
+      <param name="kld_z" value="0.99"/>
+      <param name="odom_alpha1" value="0.2"/>
+      <param name="odom_alpha2" value="0.2"/>
+      <!-- translation std dev, m -->
+      <param name="odom_alpha3" value="0.8"/>
+      <param name="odom_alpha4" value="0.2"/>
+      <param name="laser_z_hit" value="0.5"/>
+      <param name="laser_z_short" value="0.05"/>
+      <param name="laser_z_max" value="0.05"/>
+      <param name="laser_z_rand" value="0.5"/>
+      <param name="laser_sigma_hit" value="0.2"/>
+      <param name="laser_lambda_short" value="0.1"/>
+      <!-- <param name="laser_lambda_short" value="0.1"/> -->
+      <param name="laser_model_type" value="likelihood_field"/>
+      <!-- <param name="laser_model_type" value="beam"/> -->
+      <param name="laser_likelihood_max_dist" value="2.0"/>
+      <!-- 在执行滤波更新前平移运动的距离，默认0.2m(对于里程计模型有影响，模型中根据运动和地图求最终位姿的释然时丢弃了路径中的相关所有信息，已知的只有最终位姿，为了规避不合理的穿过障碍物后的非零似然，这个值建议不大于机器人半径。否则因更新频率的不同可能产生完全不同的结果) -->
+      <!-- 这是不让amcl改变小车在rviz中位置的折中办法 -->
+      <param name="update_min_d" value="5000.0"/>
+      <!-- <param name="update_min_d" value="0.2"/> -->
+      <param name="update_min_a" value="50.0"/>
+      <!-- <param name="update_min_a" value="0.5"/> -->
+
+      <param name="odom_frame_id" value="odom"/><!-- 里程计坐标系 -->
+      <param name="base_frame_id" value="base_footprint"/><!-- 添加机器人基坐标系 -->
+      <param name="global_frame_id" value="map"/><!-- 添加地图坐标系 -->
+
+      <param name="resample_interval" value="1"/>
+      <!-- ## Increase tolerance because the computer can get quite busy  -->
+      <param name="transform_tolerance" value="1.0"/>
+      <param name="recovery_alpha_slow" value="0.001"/>
+      <param name="recovery_alpha_fast" value="0.1"/>
+      <remap from="scan" to="$(arg scan_topic)"/>
+
+      <!-- 直行段 -->
+	    <param name="initial_pose_x"            value="29.3"/>
+		  <param name="initial_pose_y"            value="0"/>
+		  <param name="initial_pose_a"            value="1.570796"/>
+
+      <!-- 转弯段 -->
+	    <!-- <param name="initial_pose_x"            value="29.3"/>
+		  <param name="initial_pose_y"            value="45"/>
+		  <param name="initial_pose_a"            value="1.570796"/> -->
+
+      <!-- <param name="initial_pose_x"            value="0"/>
+		  <param name="initial_pose_y"            value="-8"/>
+		  <param name="initial_pose_a"            value="-3.1415926"/> -->
+
+    </node>
+</launch>
+
